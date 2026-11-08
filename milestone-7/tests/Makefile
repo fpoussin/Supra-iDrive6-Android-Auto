@@ -89,10 +89,10 @@ ARGS_test_ccs_input   := tests/fixtures/controls_2026-10-23_push.txt
 
 TESTS := $(patsubst SRC_%,%,$(filter SRC_test_%,$(.VARIABLES)))
 
-.PHONY: all check tsan clean $(TESTS) $(addprefix run-,$(TESTS)) run-test_media_payload run-test_aa_proto32 run-test_schema
+.PHONY: all check tsan clean $(TESTS) $(addprefix run-,$(TESTS)) run-test_media_payload run-test_aa_proto32 run-test_schema run-test_update_package
 all: $(TESTS)
 
-check: $(addprefix run-,$(TESTS)) run-test_aa_proto32 run-test_media_payload run-test_schema tsan
+check: $(addprefix run-,$(TESTS)) run-test_aa_proto32 run-test_media_payload run-test_schema run-test_update_package tsan
 	@echo "[CHECK] all host tests passed"
 
 $(OUT):
@@ -126,6 +126,9 @@ $(OUT)/test_session_bye: CXXFLAGS += -include stub_cryptor.hpp
 # rhmiapp_fake_appframework.cpp.
 
 # Compiles the payload-boundary block out of aa_session.cpp itself.
+run-test_update_package:
+	@python3 test_update_package.py
+
 run-test_media_payload:
 	@cd $(ROOT) && python3 tests/test_media_payload.py > tests/$(OUT)/test_media_payload.log 2>&1 \
 	  && echo "[PASS] test_media_payload.py" || { echo "[FAIL] test_media_payload.py"; tail -20 tests/$(OUT)/test_media_payload.log; exit 1; }
